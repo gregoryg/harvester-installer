@@ -2,6 +2,9 @@
 FROM alpine:3.12 as base
 ARG ARCH
 RUN apk --no-cache add \
+    pdsh \
+    bind-tools \
+    tree \
     bash \
     bash-completion \
     blkid \
@@ -60,17 +63,17 @@ RUN apk --no-cache add \
     wpa_supplicant \
     xfsprogs \
     xz \
- && mv -vf /etc/conf.d/qemu-guest-agent /etc/conf.d/qemu-guest-agent.orig \
- && mv -vf /etc/conf.d/rngd             /etc/conf.d/rngd.orig \
- && mv -vf /etc/conf.d/udev-settle      /etc/conf.d/udev-settle.orig \
-# replicate the default "no idea, friend" behavior of virt-what
- && touch /usr/sbin/virt-what \
- && chmod +x /usr/sbin/virt-what
+    && mv -vf /etc/conf.d/qemu-guest-agent /etc/conf.d/qemu-guest-agent.orig \
+    && mv -vf /etc/conf.d/rngd             /etc/conf.d/rngd.orig \
+    && mv -vf /etc/conf.d/udev-settle      /etc/conf.d/udev-settle.orig \
+    # replicate the default "no idea, friend" behavior of virt-what
+    && touch /usr/sbin/virt-what \
+    && chmod +x /usr/sbin/virt-what
 
-# Harvester additional tools
-RUN apk --no-cache add yq --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
+    # Harvester additional tools
+    RUN apk --no-cache add yq --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community
 
-RUN apk --no-cache add sysstat \
+    RUN apk --no-cache add sysstat \
     smartmontools \
     hwinfo \
     gotop \
@@ -93,4 +96,4 @@ RUN apk --no-cache add sysstat \
     fd \
     the_silver_searcher
 
-RUN ln -s /usr/bin/python3 /usr/bin/python
+    RUN ln -s /usr/bin/python3 /usr/bin/python
