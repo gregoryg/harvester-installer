@@ -1209,9 +1209,10 @@ func addInstallPanel(c *Console) error {
 		go func() {
 			logrus.Info("Local config: ", c.config)
 			if c.config.Install.ConfigURL != "" {
-				remoteConfig, err := getRemoteConfig(c.config.Install.ConfigURL)
+				printToPanel(c.Gui, fmt.Sprintf("Fetching %s...", c.config.Install.ConfigURL), installPanel)
+				remoteConfig, err := retryRemoteConfig(c.config.Install.ConfigURL, c.Gui)
 				if err != nil {
-					logrus.Error(err.Error())
+					logrus.Error(err)
 					printToPanel(c.Gui, err.Error(), installPanel)
 					return
 				}
@@ -1237,7 +1238,13 @@ func addInstallPanel(c *Console) error {
 			if err != nil {
 				printToPanel(c.Gui, fmt.Sprintf("invalid webhook: %s", err), installPanel)
 			}
-			doInstall(c.Gui, toCloudConfig(c.config), webhooks)
+
+			cloudConfig, err := toCloudConfig(c.config)
+			if err != nil {
+				printToPanel(c.Gui, err.Error(), installPanel)
+				return
+			}
+			doInstall(c.Gui, cloudConfig, webhooks)
 		}()
 		return c.setContentByName(footerPanel, "")
 	}
